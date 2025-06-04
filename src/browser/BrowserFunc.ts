@@ -33,6 +33,7 @@ export default class BrowserFunc {
             }
 
             await page.goto(this.bot.config.baseURL)
+            await page.waitForLoadState('domcontentloaded', { timeout: 60000 }).catch(() => { })
 
             const maxIterations = 5 // Maximum iterations set to 5
 

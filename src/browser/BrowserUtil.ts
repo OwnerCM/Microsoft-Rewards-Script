@@ -33,7 +33,7 @@ export default class BrowserUtil {
             try {
                 const element = button.isXPath ? page.locator(`xpath=${button.selector}`) : page.locator(button.selector)
                 await element.first().click({ timeout: 500 })
-                await page.waitForTimeout(500)
+                await page.waitForTimeout(1000)
 
                 this.bot.log(this.bot.isMobile, 'DISMISS-ALL-MESSAGES', `Dismissed: ${button.label}`)
 

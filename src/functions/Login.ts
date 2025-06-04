@@ -32,7 +32,7 @@ export class Login {
             // Navigate to the Bing login page
             await page.goto('https://rewards.bing.com/signin')
 
-            await page.waitForLoadState('domcontentloaded').catch(() => { })
+            await page.waitForLoadState('domcontentloaded', { timeout: 60000 }).catch(() => { })
 
             await this.bot.browser.utils.reloadBadPage(page)
 
@@ -131,9 +131,18 @@ export class Login {
             // Wait for password field
             const passwordField = await page.waitForSelector(passwordInputSelector, { state: 'visible', timeout: 5000 }).catch(() => null)
             if (!passwordField) {
-                this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field not found, possibly 2FA required', 'warn')
-                await this.handle2FA(page)
-                return
+                // 检查是否存在使用密码按钮
+                const usePasswordButton = await page.waitForSelector('(//span[@role="button"])[2]', { state: 'visible', timeout: 2000 }).catch(() => null)
+                if (usePasswordButton) {
+                    await usePasswordButton.click()
+                    await this.bot.utils.wait(2000)
+                    this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field found after clicking "Use your password" button')
+                }
+                else {
+                    this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field not found, possibly 2FA required', 'warn')
+                    await this.handle2FA(page)
+                    return
+                }
             }
 
             await this.bot.utils.wait(1000)
@@ -244,11 +253,16 @@ export class Login {
         const targetPathname = '/'
 
         // eslint-disable-next-line no-constant-condition
-        while (true) {
+        for (let iteration = 1; iteration <= 20; iteration++) {
             await this.bot.browser.utils.tryDismissAllMessages(page)
             const currentURL = new URL(page.url())
             if (currentURL.hostname === targetHostname && currentURL.pathname === targetPathname) {
                 break
+            }
+            else {
+                await page.goto('https://rewards.bing.com/')
+                await page.waitForLoadState('domcontentloaded', { timeout: 60000 }).catch(() => { })
+                this.bot.log(this.bot.isMobile, 'LOGIN', 'Waiting for login to complete...')
             }
         }
 
