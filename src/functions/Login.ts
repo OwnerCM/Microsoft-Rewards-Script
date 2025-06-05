@@ -131,12 +131,20 @@ export class Login {
             // Wait for password field
             const passwordField = await page.waitForSelector(passwordInputSelector, { state: 'visible', timeout: 5000 }).catch(() => null)
             if (!passwordField) {
-                // 检查是否存在使用密码按钮
+                // 检查是否存在其他登录方式 "Other ways to sign in"
                 const usePasswordButton = await page.waitForSelector('(//span[@role="button"])[2]', { state: 'visible', timeout: 2000 }).catch(() => null)
                 if (usePasswordButton) {
+                    this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field found after clicking "Use Other Login" button')
                     await usePasswordButton.click()
+
+                    //新增一个选择密码登录页面 "Use your password"
+                    const usePasswordButton1 = await page.waitForSelector('//div[@id="view"]//span[contains(text(), "Use your password")]', { state: 'visible', timeout: 2000 }).catch(() => null)
+                    if (usePasswordButton1) {
+                        this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field found after clicking "Use your password" button')
+                        await usePasswordButton1.click()
+                    }
                     await this.bot.utils.wait(2000)
-                    this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field found after clicking "Use your password" button')
+                    this.bot.log(this.bot.isMobile, 'LOGIN', 'clicking "Use your password" button completed')
                 }
                 else {
                     this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field not found, possibly 2FA required', 'warn')
