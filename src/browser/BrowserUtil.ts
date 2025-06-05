@@ -16,6 +16,7 @@ export default class BrowserUtil {
             { selector: 'button[type="submit"]', label: 'Submit Button' },
             { selector: '#acceptButton', label: 'AcceptButton' },
             { selector: '.ext-secondary.ext-button', label: '"Skip for now" Button' },
+            { selector: '//div[@id="view"]//button[contains(text(), "Skip for now")]', label:'"Skip for now" Button', isXPath: true },
             { selector: '#iLandingViewAction', label: 'iLandingViewAction' },
             { selector: '#iShowSkip', label: 'iShowSkip' },
             { selector: '#iNext', label: 'iNext' },
