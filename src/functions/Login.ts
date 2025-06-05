@@ -134,19 +134,23 @@ export class Login {
                 // 检查是否存在其他登录方式 "Other ways to sign in"
                 const usePasswordButton = await page.waitForSelector('//div[@id="view"]//span[contains(text(), "Other ways to sign in")]', { state: 'visible', timeout: 2000 }).catch(() => null)
                 if (usePasswordButton) {
-                    this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field found after clicking "Use Other Login" button')
+                    this.bot.log(this.bot.isMobile, 'LOGIN', 'clicking "Use Other ways to sign in" button')
                     await usePasswordButton.click()
-
-                    //新增一个选择密码登录页面 "Use your password"
-                    const usePasswordButton1 = await page.waitForSelector('//div[@id="view"]//span[contains(text(), "Use your password")]', { state: 'visible', timeout: 2000 }).catch(() => null)
-                    if (usePasswordButton1) {
-                        this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field found after clicking "Use your password" button')
-                        await usePasswordButton1.click()
-                    }
+                    
                     await this.bot.utils.wait(2000)
-                    this.bot.log(this.bot.isMobile, 'LOGIN', 'clicking "Use your password" button completed')
                 }
-                else {
+
+                //新增一个选择密码登录页面 "Use your password"
+                const usePasswordButton1 = await page.waitForSelector('//div[@id="view"]//span[contains(text(), "Use your password")]', { state: 'visible', timeout: 2000 }).catch(() => null)
+                if (usePasswordButton1) {
+                    this.bot.log(this.bot.isMobile, 'LOGIN', 'clicking "Use your password" button')
+                    await usePasswordButton1.click()
+
+                    await this.bot.utils.wait(2000)
+                }
+                this.bot.log(this.bot.isMobile, 'LOGIN', 'clicking "Use your password" button completed')
+                
+                if(!usePasswordButton && !usePasswordButton1) {
                     this.bot.log(this.bot.isMobile, 'LOGIN', 'Password field not found, possibly 2FA required', 'warn')
                     await this.handle2FA(page)
                     return
