@@ -309,6 +309,12 @@ async function main() {
         await rewardsBot.run()
     } catch (error) {
         log(false, 'MAIN-ERROR', `Error running desktop bot: ${error}`, 'error')
+
+        // 出现异常后等待15分钟后重试一次
+        log(false, 'MAIN-ERROR', 'Retrying after 15 minutes...', 'error')
+        setTimeout(async () => {
+            await rewardsBot.run()
+        }, 15 * 60 * 1000) // 15 minutes
     }
 }
 
